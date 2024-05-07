@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<w2:type>DEFAULT</w2:type>
+		<w2:buildDate />
+		<xf:model>
+			<xf:instance>
+				<data xmlns="" />
+			</xf:instance>
+			<w2:dataCollection baseNode="map">
+				<w2:dataList id="dataList1" baseNode="list" saveRemovedData="true" repeatNode="map">
+					<w2:columnInfo>
+						<w2:column id="chk" name="chk" dataType="text"></w2:column>
+						<w2:column id="name" name="FileName" dataType="text"></w2:column>
+						<w2:column id="displaySize" name="Size" dataType="text"></w2:column>
+						<w2:column id="Status" name="Status" dataType="text"></w2:column>
+						<w2:column id="btn" name="btn" dataType="text"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+			</w2:dataCollection>
+			<w2:workflowCollection>
+			</w2:workflowCollection>
+		</xf:model>
+		<script type="text/javascript" lazy="false"><![CDATA[
+/**
+ * 그리드뷰 셀 클릭 시 multiupload open 처리 (row 단위로 multiupload 추가해야하는 경우)
+ *   - 웹스퀘어 기본 api 로는 multiuplaod open 처리 없음
+ *   - jquery 를 통해서 $('#'+mpdUploadId+'_file_input').click();  로 파일 선택 이벤트 처리 가능 
+ * 
+ */
+
+scwin.btnRow = "";
+	
+scwin.onpageload = function() {
+	dataList1.insertRow();
+	dataList1.insertRow();
+	dataList1.insertRow();
+};
+
+scwin.onpageunload = function() {
+	
+};
+
+
+scwin.mpd_upload_ondone = function(data) {
+	//debugger;
+	console.log("scwin.mpd_upload_ondone ===");
+	
+	var fileObj = data[0];
+	var path = fileObj.key;
+	var file = fileObj.file;
+	var localFile = fileObj.localFile;
+	var size = fileObj.size;
+	
+	dataList1.setCellData(scwin.btnRow, "name" , localFile);
+	dataList1.setCellData(scwin.btnRow, "displaySize" , size);
+	
+	scwin.btnRow = "";
+	
+	/*	
+	for(var idx = 0 ; idx < data.length ; idx++){
+		var fileObj = data[idx];
+		var path = fileObj.key;
+		var file = fileObj.file;
+		var localFile = fileObj.localFile;
+		var size = fileObj.size;
+		
+		console.log("localFile : " + localFile + ", file : " + file + ", path : " + path + ", size : " + size);			
+		
+	}
+	*/	
+};
+
+scwin.mpd_upload_onprogress = function(data) {
+	//debugger;
+};
+
+scwin.mpd_upload_onComplete = function() {
+	//debugger;
+};
+
+scwin.selectCallback = function() {
+	//console.log("scwin.selectCallback ===");
+	
+	mpd_upload.startUpload();
+	
+	/*
+	var fileInfos = mpd_upload.getFileInfos();
+	for(var idx = 0 ; idx < fileInfos.length ; idx++){
+		var fileArr = [];
+		var fileInfo = fileInfos[idx];
+		var name = fileInfo.name;
+		var ext = name.substring(name.lastIndexOf('.')+1, name.length);
+		if(ext == "docx" || ext == "hwp"){
+			fileArr.push(fileInfo);
+			dataList1.setJSON( fileArr );	
+		}else{
+			mpd_upload.removeFile(name);
+		}	
+	}
+	*/
+	
+};
+
+scwin.gridView1_oncellclick = function(row,col,colId) {
+	if(colId == "btn"){
+		scwin.btnRow = row;
+		var mpdUploadId = mpd_upload.getID();		
+		$('#'+mpdUploadId+'_file_input').click();
+	}
+};
+	
+scwin.trigger1_onclick = function(e) {
+	mpd_upload.startUpload();	
+};
+
+scwin.trigger2_onclick = function(e) {
+	var mpdUploadId = mpd_upload.getID();		
+	$('#'+mpdUploadId+'_file_input').click();		
+};
+
+		
+	
+	]]></script>
+	</head>
+	<body ev:onpageload="scwin.onpageload" ev:onpageunload="scwin.onpageunload">
+		<w2:gridView id="gridView1" style="width:538px;height:150px;" scrollByColumn="false" defaultCellHeight="20" scrollByColumnAdaptive="false"
+			dataList="data:dataList1" autoFit="allColumn" ev:oncellclick="scwin.gridView1_oncellclick">
+			<w2:caption style="" id="caption1" value="this is a grid caption."></w2:caption>
+			<w2:header style="" id="header1">
+				<w2:row style="" id="row1">
+					<w2:column width="70" inputType="checkbox" style="height:20px" id="column4" value="chk" displayMode="label"></w2:column>
+					<w2:column width="222" inputType="text" style="height:20px" id="column3" value="FileName" displayMode="label"></w2:column>
+					<w2:column width="95" inputType="text" style="height:20px" id="column2" value="Size" displayMode="label"></w2:column>
+					<w2:column width="70" inputType="text" style="height:20px" id="column5" value="버튼" displayMode="label"></w2:column>
+				</w2:row>
+			</w2:header>
+			<w2:gBody style="" id="gBody1">
+				<w2:row style="" id="row2">
+					<w2:column width="70" inputType="checkbox" style="height:20px" id="chk" value="" displayMode="label"></w2:column>
+					<w2:column width="222" inputType="text" style="height:20px" id="name" value="" displayMode="label"></w2:column>
+					<w2:column width="95" inputType="text" style="height:20px" id="displaySize" value="" displayMode="label"></w2:column>
+					<w2:column width="70" inputType="button" style="height:20px" id="btn" value="업로드" displayMode="label"></w2:column>
+				</w2:row>
+			</w2:gBody>
+		</w2:gridView>
+
+		<xf:group id="" style="margin-top:5px;width: 130px;">
+			<w2:multiupload mode="html5_transparent" filter="그림파일:*.jpg;*.gif;*.png" ev:ondone="scwin.mpd_upload_ondone"
+				ev:onComplete="scwin.mpd_upload_onComplete" wmode="false"
+				style="width:541px;height:60px;background-color: antiquewhite;position: relative;float: left;display: none;" id="mpd_upload" uploadButton="true"
+				ev:onprogress="scwin.mpd_upload_onprogress" selectCallback="scwin.selectCallback" fireEventOnError="true">
+			</w2:multiupload>
+			<xf:group id="" style="width: 200px;height: 25px;position: relative;float: left;display: none;">
+				<xf:trigger ev:onclick="scwin.trigger2_onclick" style="width: 80px;height: 23px;position: relative;float: left;"
+					id="trigger2" type="button">
+					<xf:label><![CDATA[선택]]></xf:label>
+				</xf:trigger>
+				<xf:trigger ev:onclick="scwin.trigger1_onclick" style="width: 80px;height: 23px;position: relative;float: left;"
+					id="trigger1" type="button">
+					<xf:label><![CDATA[전송]]></xf:label>
+				</xf:trigger>
+			</xf:group>
+		</xf:group>
+	</body>
+</html>
